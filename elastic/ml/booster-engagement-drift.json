@@ -1,0 +1,39 @@
+{
+  "description": "Detects when a major gift donor's engagement signals drop abnormally",
+  "analysis_config": {
+    "bucket_span": "1w",
+    "detectors": [
+      {
+        "function": "mean",
+        "field_name": "signal_value",
+        "over_field_name": "donor_id",
+        "partition_field_name": "event_type",
+        "detector_description": "Unusual drop in signal_value per donor per event_type"
+      }
+    ],
+    "influencers": ["donor_id", "event_type"]
+  },
+  "data_description": {
+    "time_field": "event_date",
+    "time_format": "epoch_ms"
+  },
+  "datafeed_config": {
+    "indices": ["booster-engagement-events"],
+    "query": {
+      "bool": {
+        "must": [
+          {
+            "terms": {
+              "event_type": [
+                "email_open",
+                "event_attendance",
+                "portal_login",
+                "call_completed"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}
